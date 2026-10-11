@@ -1,7 +1,12 @@
 from tugas_kuliah import Tugas, ManajemenTugas
 from tugas_kuliah.fileio import (
-    simpan_tugas, baca_tugas, simpan_laporan, NAMA_FILE
+    simpan_tugas,
+    simpan_semua_tugas,
+    baca_tugas,
+    simpan_laporan,
 )
+from tugas_kuliah.validasi import cek_status
+
 
 def tampilkan_menu():
     # Menampilkan pilihan menu
@@ -15,14 +20,11 @@ def tampilkan_menu():
     print("7. Buat laporan")
     print("0. Keluar")
 
+
 def simpan_semua(manajemen):
-    # Menyimpan semua tugas ke file
-    with open(NAMA_FILE, "w", encoding="utf-8") as file:
-        for tugas in manajemen.daftar_tugas:
-            file.write(
-                f"{tugas.judul}|{tugas.deadline}|"
-                f"{tugas.prioritas}|{tugas.status}\n"
-            )
+    # Menyimpan semua tugas menggunakan fungsi dari fileio
+    simpan_semua_tugas(manajemen.daftar_tugas)
+
 
 def muat_data():
     # Membaca data yang sudah tersimpan
@@ -43,8 +45,10 @@ def muat_data():
     return manajemen
 
 
+
+
 def tambah_tugas(manajemen):
-    # Meminta data tugas baru
+    # Meminta data tugas baru dan menyimpannya
     try:
         judul = input("Judul tugas: ")
         deadline = input("Deadline (YYYY-MM-DD): ")
@@ -55,6 +59,20 @@ def tambah_tugas(manajemen):
             deadline=deadline,
             prioritas=prioritas
         )
+
+        manajemen.tambah_tugas(tugas)
+        simpan_tugas(tugas)
+
+    except ValueError as error:
+        print("Data salah:", error)
+
+
+        manajemen.tambah_tugas(tugas)
+        simpan_tugas(tugas)
+
+    except ValueError as error:
+        print("Data salah:", error)
+
 
         manajemen.tambah_tugas(tugas)
         simpan_tugas(tugas)
@@ -86,13 +104,16 @@ def cari_tugas(manajemen):
         print("Tugas tidak ditemukan.")
 
 
+
 def ubah_status(manajemen):
-    # Mengubah status tugas
+    # Memvalidasi dan mengubah status tugas
     judul = input("Judul tugas: ")
     status = input("Status baru (Belum selesai/Selesai): ")
 
-    if status not in ["Belum selesai", "Selesai"]:
-        print("Status tidak sesuai.")
+    try:
+        status = cek_status(status)
+    except ValueError as error:
+        print("Data salah:", error)
         return
 
     if manajemen.ubah_status(judul, status):
@@ -100,6 +121,7 @@ def ubah_status(manajemen):
         print("Status berhasil diubah.")
     else:
         print("Tugas tidak ditemukan.")
+
 
 
 def urutkan_tugas(manajemen):
