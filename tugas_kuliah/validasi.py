@@ -24,3 +24,9 @@ if __name__ == "__main__":
     print(cek_judul("Tugas Basis Data"))
     print(cek_prioritas("Tinggi"))
     print(cek_deadline("2026-10-20"))
+
+def cek_status(status):
+    # Memastikan status tugas sesuai pilihan
+    if status not in ["Belum selesai", "Selesai"]:
+        raise ValueError("Status tidak sesuai")
+    return status
